@@ -1,6 +1,6 @@
 # flutter_application_1
 
-A new Flutter project.
+A new Flutter project. Follows https://codelabs.developers.google.com/codelabs/flutter-codelab-first
 
 ## Getting Started
 
