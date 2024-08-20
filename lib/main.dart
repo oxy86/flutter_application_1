@@ -68,46 +68,86 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
-        page = Placeholder();
+        page = FavoritesPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
 
-    return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: true,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home),
-                  label: Text('Home'),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          body: Row(
+            children: [
+              SafeArea(
+                child: NavigationRail(
+                  extended: constraints.maxWidth > 800,
+                  // minWidth: 56,
+                  // labelType: NavigationRailLabelType.none,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.favorite),
+                      label: Text('Favorites'),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+        
+                  },
                 ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.favorite),
-                  label: Text('Favorites'),
+              ),
+              Expanded(
+                child: Container(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: page,
                 ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
-                });
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+}
 
-              },
+class FavoritesPage extends StatelessWidget {
+  const FavoritesPage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    var appState = context.watch<MyAppState>();
+     
+    if (appState.favorites.isEmpty) {
+      return Center(
+        child: Text('No favorites yet.'),
+      );
+    }
+
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('You have '
+              '${appState.favorites.length} favorites:'),
+        ),
+        for( var msg in appState.favorites) 
+          ListTile(
+            leading: Icon(Icons.favorite),
+            title: Text(msg.asCamelCase)
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
-            ),
-          ),
-        ],
-      ),
+        
+      ],
     );
   }
 }
@@ -176,9 +216,9 @@ class BigCard extends StatelessWidget {
     );
 
     return Card(
-      color: theme.colorScheme.primary,
+      color: theme.colorScheme.secondary,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(30.0),
         child: Text(
           pair.asLowerCase, 
           style: style,
